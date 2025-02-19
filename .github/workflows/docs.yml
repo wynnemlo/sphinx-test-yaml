@@ -18,9 +18,8 @@ jobs:
     - name: Checkout SQL repository
       uses: actions/checkout@v4
       with:
-        repository: wynnemlo/sphinx-test-yaml-ctf-demo  # Replace with your SQL repo
+        repository: wynnemlo/sphinx-test-yaml-ctf-demo
         path: sql-repo
-        # If private repo, uncomment:
         token: ${{ secrets.SQL_REPO_TOKEN }}
 
     - name: Set up Python
