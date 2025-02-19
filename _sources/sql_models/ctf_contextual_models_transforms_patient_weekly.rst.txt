@@ -1,0 +1,6 @@
+
+ctf_contextual_models_transforms_patient_weekly
+===============================================
+
+.. yamlsqldoc:: ctf/contextual_models/transforms/patient_weekly.bq.sql
+   :repo_path: /home/runner/work/sphinx-test-yaml/sphinx-test-yaml/sql-repo
