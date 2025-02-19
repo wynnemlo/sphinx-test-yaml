@@ -18,5 +18,4 @@ Testing how
    :maxdepth: 2
    :caption: Contents:
 
-   usage/installation
-   sql_models
+   sql_models/index

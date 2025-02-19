@@ -5,10 +5,22 @@ from pathlib import Path
 import yaml
 from docutils import nodes
 from docutils.parsers.rst import directives
+from sphinx.application import Sphinx
 from sphinx.util import logging
 from sphinx.util.docutils import SphinxDirective
 
 logger = logging.getLogger(__name__)
+
+def discover_sql_files(repo_path):
+    """Discover all .bq.sql files in the repository."""
+    sql_files = []
+    repo_path = Path(repo_path)
+    
+    for sql_file in repo_path.rglob('*.bq.sql'):
+        relative_path = sql_file.relative_to(repo_path)
+        sql_files.append(str(relative_path))
+    
+    return sorted(sql_files)
 
 def parse_sql_file(filepath):
     """Parse a SQL file with YAML header."""
@@ -36,7 +48,7 @@ def parse_sql_file(filepath):
 class YAMLSQLDocDirective(SphinxDirective):
     """Directive to document SQL files with YAML headers."""
     has_content = True
-    required_arguments = 1  # SQL file path
+    required_arguments = 1
     optional_arguments = 0
     final_argument_whitespace = True
     option_spec = {
@@ -125,9 +137,58 @@ class YAMLSQLDocDirective(SphinxDirective):
 
         return [container]
 
-def setup(app):
+def generate_sql_doc_pages(app):
+    """Generate documentation pages for all SQL files."""
+    repo_path = app.config.yaml_demo_path
+    if not repo_path:
+        logger.warning("yaml_demo_path not set in conf.py")
+        return
+
+    # Discover all SQL files
+    sql_files = discover_sql_files(repo_path)
+    
+    # Create the sql_models directory if it doesn't exist
+    docs_dir = Path(app.srcdir) / 'sql_models'
+    docs_dir.mkdir(exist_ok=True)
+    
+    # Generate index.rst for sql_models
+    index_content = """SQL Models
+==========
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Models:
+
+"""
+    
+    # Generate a page for each SQL file
+    for sql_file in sql_files:
+        # Convert path to documentation path
+        doc_name = str(sql_file).replace('/', '_').replace('.bq.sql', '')
+        rst_file = docs_dir / f"{doc_name}.rst"
+        
+        # Generate RST content
+        rst_content = f"""
+{doc_name}
+{'=' * len(doc_name)}
+
+.. yamlsqldoc:: {sql_file}
+   :repo_path: {repo_path}
+"""
+        
+        # Write the RST file
+        rst_file.write_text(rst_content)
+        
+        # Add to index
+        index_content += f"   {doc_name}\n"
+    
+    # Write the index file
+    (docs_dir / "index.rst").write_text(index_content)
+
+def setup(app: Sphinx):
     app.add_directive('yamlsqldoc', YAMLSQLDocDirective)
     app.add_config_value('yaml_demo_path', None, 'env')
+    app.connect('builder-inited', generate_sql_doc_pages)
     
     return {
         'version': '0.1',
