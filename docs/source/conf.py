@@ -22,7 +22,7 @@ if os.environ.get('GITHUB_ACTIONS'):
     yaml_demo_path = str(Path(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'sql-repo'))).resolve())
 else:
     # Local development path
-    yaml_demo_path = str(Path('/Users/wynnelo/code/sphinx-test-yaml-ctf-demo').resolve())
+    yaml_demo_path = '../sql-repo'
 
 templates_path = ['_templates']
 exclude_patterns = []
