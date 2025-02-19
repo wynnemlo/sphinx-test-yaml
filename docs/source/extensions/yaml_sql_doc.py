@@ -11,6 +11,20 @@ from sphinx.util.docutils import SphinxDirective
 
 logger = logging.getLogger(__name__)
 
+def get_model_type(file_path):
+    """Extract model type from file path."""
+    parts = Path(file_path).parts
+    for part in parts:
+        if part in ['contextual_models', 'core_models']:
+            return part
+    return 'other_models'
+
+def get_model_name(yaml_data):
+    """Extract model name from YAML data."""
+    if yaml_data and 'output' in yaml_data and 'name' in yaml_data['output']:
+        return yaml_data['output']['name']
+    return None
+
 def discover_sql_files(repo_path):
     """Discover all .bq.sql files in the repository."""
     sql_files = []
@@ -18,9 +32,20 @@ def discover_sql_files(repo_path):
     
     for sql_file in repo_path.rglob('*.bq.sql'):
         relative_path = sql_file.relative_to(repo_path)
-        sql_files.append(str(relative_path))
+        
+        # Parse YAML to get model name
+        yaml_data = parse_sql_file(str(sql_file))
+        model_name = get_model_name(yaml_data) if yaml_data else None
+        model_type = get_model_type(str(relative_path))
+        
+        sql_files.append({
+            'path': str(relative_path),
+            'model_type': model_type,
+            'model_name': model_name,
+            'yaml_data': yaml_data
+        })
     
-    return sorted(sql_files)
+    return sorted(sql_files, key=lambda x: (x['model_type'], x['model_name'] or x['path']))
 
 def parse_sql_file(filepath):
     """Parse a SQL file with YAML header."""
@@ -147,43 +172,79 @@ def generate_sql_doc_pages(app):
     # Discover all SQL files
     sql_files = discover_sql_files(repo_path)
     
+    # Group files by model type
+    files_by_type = {}
+    for sql_file in sql_files:
+        model_type = sql_file['model_type']
+        if model_type not in files_by_type:
+            files_by_type[model_type] = []
+        files_by_type[model_type].append(sql_file)
+    
     # Create the sql_models directory if it doesn't exist
     docs_dir = Path(app.srcdir) / 'sql_models'
     docs_dir.mkdir(exist_ok=True)
     
-    # Generate index.rst for sql_models
-    index_content = """SQL Models
+    # Generate main index.rst
+    main_index_content = """SQL Models
 ==========
 
 .. toctree::
    :maxdepth: 2
-   :caption: Models:
+   :caption: Model Types:
 
 """
     
-    # Generate a page for each SQL file
-    for sql_file in sql_files:
-        # Convert path to documentation path
-        doc_name = str(sql_file).replace('/', '_').replace('.bq.sql', '')
-        rst_file = docs_dir / f"{doc_name}.rst"
+    # Process each model type
+    for model_type, type_files in files_by_type.items():
+        # Create directory for model type
+        type_dir = docs_dir / model_type
+        type_dir.mkdir(exist_ok=True)
         
-        # Generate RST content
-        rst_content = f"""
-{doc_name}
-{'=' * len(doc_name)}
+        # Generate index for this model type
+        type_index_content = f"""
+{model_type.replace('_', ' ').title()}
+{'=' * len(model_type)}
 
-.. yamlsqldoc:: {sql_file}
+.. toctree::
+   :maxdepth: 1
+
+"""
+        
+        # Generate a page for each SQL file in this type
+        for sql_file in type_files:
+            # Use model name from YAML if available, otherwise use file path
+            if sql_file['model_name']:
+                doc_name = sql_file['model_name'].replace('.', '_')
+                title = sql_file['model_name']
+            else:
+                doc_name = Path(sql_file['path']).stem
+                title = doc_name
+            
+            rst_file = type_dir / f"{doc_name}.rst"
+            
+            # Generate RST content
+            rst_content = f"""
+{title}
+{'=' * len(title)}
+
+.. yamlsqldoc:: {sql_file['path']}
    :repo_path: {repo_path}
 """
+            
+            # Write the RST file
+            rst_file.write_text(rst_content)
+            
+            # Add to type index
+            type_index_content += f"   {doc_name}\n"
         
-        # Write the RST file
-        rst_file.write_text(rst_content)
+        # Write the type index file
+        (type_dir / "index.rst").write_text(type_index_content)
         
-        # Add to index
-        index_content += f"   {doc_name}\n"
+        # Add to main index
+        main_index_content += f"   {model_type}/index\n"
     
-    # Write the index file
-    (docs_dir / "index.rst").write_text(index_content)
+    # Write the main index file
+    (docs_dir / "index.rst").write_text(main_index_content)
 
 def setup(app: Sphinx):
     app.add_directive('yamlsqldoc', YAMLSQLDocDirective)
