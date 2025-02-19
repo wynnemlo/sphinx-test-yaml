@@ -1,0 +1,48 @@
+name: Build and Deploy Documentation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout documentation repository
+      uses: actions/checkout@v4
+
+    - name: Checkout SQL repository
+      uses: actions/checkout@v4
+      with:
+        repository: wynnemlo/sphinx-test-yaml-ctf-demo  # Replace with your SQL repo
+        path: sql-repo
+        # If private repo, uncomment:
+        token: ${{ secrets.SQL_REPO_TOKEN }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        cd docs
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Build documentation
+      run: |
+        cd docs
+        make html
+
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: docs/build/html

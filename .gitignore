@@ -1,0 +1,23 @@
+# Build output
+build/
+_build/
+docs/build/
+docs/_build/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
