@@ -7,4 +7,4 @@ Patient Weekly Model
 ------------------
 
 .. yamlsqldoc:: ctf/contextual_models/transforms/patient_weekly.bq.sql
-   :repo_path: /Users/wynnelo/code/sphinx-test-yaml-ctf-demo
+   :repo_path: ../sql-repo
