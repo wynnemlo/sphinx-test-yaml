@@ -1,6 +1,6 @@
-sphinx>=7.2.0
+Sphinx==8.1.3
 sphinx-autobuild>=2024.2.4
-pyyaml>=6.0.1
+PyYAML==6.0.2
 accessible-pygments==0.0.5
 babel==2.17.0
 beautifulsoup4==4.13.3
@@ -23,7 +23,7 @@ requests==2.32.3
 setuptools==75.8.0
 snowballstemmer==2.2.0
 soupsieve==2.6
-sphinx-book-theme==0.3.3 ##Keep this hardcoded
+sphinx-book-theme==0.3.3 
 sphinx-copybutton==0.5.2
 sphinx-multiproject==1.0.0
 sphinxcontrib-applehelp==2.0.0
