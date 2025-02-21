@@ -41,7 +41,7 @@ napoleon_google_docstring = False
 napoleon_include_special_with_doc = False
 
 templates_path = ['_templates']
-exclude_patterns = [exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # -- Options for HTML output -------------------------------------------------
 html_theme = "sphinx_book_theme"
