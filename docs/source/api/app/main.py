@@ -5,6 +5,11 @@ import numpy as np
 import json
 
 app = FastAPI()
+# Load environment variables
+load_dotenv()
+
+# Set OpenAI API key securely
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Load embeddings from file
 with open("../api/data/embeddings.json", "r") as f:
