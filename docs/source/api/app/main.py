@@ -2,17 +2,20 @@ from fastapi import FastAPI, HTTPException
 import openai
 from scipy.spatial.distance import cosine
 import numpy as np
+import json
 
 app = FastAPI()
 
-# Load embedded documents
-docs = embedded_docs
+# Load embeddings from file
+with open("../api/data/embeddings.json", "r") as f:
+    docs = json.load(f)
 
+# Example: Access embeddings in the chatbot logic
 def find_best_match(query_embedding, docs):
     best_doc = None
     min_distance = float("inf")
     for doc in docs:
-        distance = cosine(query_embedding, doc["embedding"])
+        distance = np.linalg.norm(np.array(query_embedding) - np.array(doc["embedding"]))
         if distance < min_distance:
             min_distance = distance
             best_doc = doc
