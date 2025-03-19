@@ -1,3 +1,19 @@
+async function getBotResponse(message) {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer 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"
+        },
+        body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [{ role: "user", content: message }]
+        })
+    });
+    const data = await response.json();
+    return data.choices[0].message.content;
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     let chatbox = document.createElement("div");
     chatbox.innerHTML = `
@@ -38,16 +54,15 @@ document.addEventListener("DOMContentLoaded", function () {
     let chatMessages = document.getElementById("chat-messages");
     let chatInput = document.getElementById("chat-input");
 
-    chatInput.addEventListener("keypress", function (event) {
+    chatInput.addEventListener("keypress", async function (event) {
         if (event.key === "Enter") {
             let userInput = chatInput.value.trim();
             if (userInput) {
                 chatMessages.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
                 chatInput.value = "";
-                setTimeout(() => {
-                    chatMessages.innerHTML += `<p><strong>Bot:</strong> Hello! I am a simple chatbot.</p>`;
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 500);
+                let botResponse = await getBotResponse(userInput);
+                chatMessages.innerHTML += `<p><strong>Bot:</strong> ${botResponse}</p>`;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
         }
     });
