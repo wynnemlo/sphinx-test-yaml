@@ -4,7 +4,7 @@ import openai
 from bs4 import BeautifulSoup
 
 # Set your OpenAI API key
-openai.api_key = "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"
+openai.api_key = "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"
 
 # Path to Sphinx-generated HTML files
 HTML_DIRECTORY = "../_build/html/"  # Or adjust the path if necessary
