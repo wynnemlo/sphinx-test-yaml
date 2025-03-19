@@ -12,6 +12,12 @@ today_fmt = '%B %d, %Y'
 
 # -- General configuration ---------------------------------------------------
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'extensions')))
+# Add chatbot and API paths
+sys.path.insert(0, os.path.abspath('../api/app'))
+
+# Enable chatbot widget
+html_static_path = ['_static']
+templates_path = ['_templates']
 
 extensions = [
     'sphinx.ext.autodoc',
@@ -24,7 +30,8 @@ extensions = [
     'sphinx_togglebutton',
     'sphinx_book_theme',
 	'sphinx.ext.todo',
-    'iframe',   
+    'iframe',
+	'chatbot_api',
 ]
 
 # Path to SQL repository - different for local development vs CI
@@ -66,7 +73,8 @@ html_sidebars = {
 
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
-html_js_files = ['chatbot.js']
+# Enable chatbot widget
+templates_path = ['_templates']
 
 html_sidebars = {
   "path/to/page": [],
