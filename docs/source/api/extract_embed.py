@@ -1,10 +1,14 @@
 import os
 import json
 import openai
+from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 
-# Set your OpenAI API key
-openai.api_key = "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"
+# Load environment variables
+load_dotenv()
+
+# Set OpenAI API key securely
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Path to Sphinx-generated HTML files
 HTML_DIRECTORY = "../_build/html/"  # Or adjust the path if necessary
