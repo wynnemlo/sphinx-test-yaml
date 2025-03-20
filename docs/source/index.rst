@@ -25,6 +25,11 @@ Check out the :doc:`metrics` section for in depth definitions on metrics, and wh
 
 Check out the Tables section for an overview of all the core & contextual models in our analytics layers 
 
+.. raw:: html
+
+    <div id="chatbot-container"></div>
+
+
 .. toctree::
    :maxdepth: 0
    :glob:
