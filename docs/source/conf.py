@@ -13,11 +13,9 @@ today_fmt = '%B %d, %Y'
 # -- General configuration ---------------------------------------------------
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'extensions')))
 # Add chatbot and API paths
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'api')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'api/app')))
 sys.path.insert(0, os.path.abspath('../api/app'))
-
-# Enable chatbot widget
-html_static_path = ['_static']
-templates_path = ['_templates']
 
 extensions = [
     'sphinx.ext.autodoc',
