@@ -13,10 +13,6 @@ today_fmt = '%B %d, %Y'
 # -- General configuration ---------------------------------------------------
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'extensions')))
 
-def setup(app):
-    app.add_js_file('chatbot.js')
-    app.add_css_file('chatbot.css')
-
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
@@ -45,6 +41,10 @@ napoleon_google_docstring = False
 napoleon_include_special_with_doc = False
 
 templates_path = ['_templates']
+def setup(app):
+    app.add_js_file('chatbot.js')
+    app.add_css_file('chatbot.css')
+	
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # -- Options for HTML output -------------------------------------------------
